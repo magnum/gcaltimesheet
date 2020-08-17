@@ -1,0 +1,15 @@
+%h1 Calendars#index
+
+%table.table
+  %thead
+    %tr
+      %th Summary
+      %th description
+      %th Location
+  %tbody
+    - @calendars.each do |calendar|
+      %tr
+        %td
+          = link_to calendar.summary, calendar_events_url(calendar_id: calendar.id)
+        %td= calendar.description
+        %td= calendar.location

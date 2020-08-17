@@ -1,0 +1,29 @@
+%h1
+  Events
+%h2
+  Calendar
+  = @calendar.summary
+
+.mb-4
+  =link_to "< back to calendars", calendars_url
+
+- if @events.empty?
+  No events found
+- else
+  %table.table
+    %thead
+      %tr
+        %th start
+        %th end
+        %th summary
+    %tbody
+      - @events.each do |event|
+        - datetime_start = event.start.date || event.start.date_time
+        - datetime_end = event.end.date || event.end.date_time
+        %tr
+          %td= datetime_start.strftime("%c")
+          %td= datetime_end.strftime("%c")
+          %td
+            = link_to event.summary, event.html_link, target: "_blank"
+
+

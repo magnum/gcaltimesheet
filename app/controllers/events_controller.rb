@@ -1,22 +1,18 @@
-require 'google/api_client/client_secrets.rb'
-require 'google/apis/calendar_v3'
 class EventsController < ApplicationController
+  include GoogleCalendarizable
+  
   before_action :authenticate
+  
   def index
-    token = current_user.google_token
-    # Initialize Google Calendar API
-    service = Google::Apis::CalendarV3::CalendarService.new
-    # Use google keys to authorize
-    service.authorization = token.google_secret.to_authorization
-    # Request for a new access token just incase it expired
-    if token.expired?
-      new_access_token = service.authorization.refresh!
-      token.access_token = new_access_token['access_token']
-      token.expires_at = 
-        Time.now.to_i + new_access_token['expires_in'].to_i
-      token.save
-    end
-    # Get a list of calendars
-    @calendar_list = service.list_calendar_lists.items
+    service = calendar_service
+    @calendar = service.get_calendar(params[:calendar_id])
+    @events = service.list_events(  
+      @calendar.id,
+      max_results: 10,
+      single_events: true,
+      order_by: "startTime",
+      time_min: DateTime.now.rfc3339
+    ).items
+    #binding.pry
   end
 end
